@@ -300,8 +300,8 @@ const handleShiftChange = (day, field, value) => {
       return;
     }
     // Validation checks before approval
-    if (parseFloat(formData.totalHours) > 20) {
-      alert('Cannot approve schedule exceeding 20 weekly hours');
+    if (parseFloat(formData.totalHours) > 80) {
+      alert('Cannot approve schedule exceeding 80 monthly hours');
       return;
     }
   
