@@ -61,7 +61,7 @@ const WorkSchedule = () => {
 
     // Determine the start and end indices for the current week
     const weekStart = Math.floor(day / 7) * 7;
-    const weekEnd = weekStart + 4;
+    const weekEnd = weekStart + 5;
 
     // Validate work hours (8 AM to 5 PM)
     if (startHour < 8 || startHour > 17 || endHour < 8 || endHour > 17) {
