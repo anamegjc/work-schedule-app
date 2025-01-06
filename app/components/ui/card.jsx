@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 export function Card({ className, ...props }) {
   return (
@@ -6,7 +6,7 @@ export function Card({ className, ...props }) {
       className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`}
       {...props}
     />
-  )
+  );
 }
 
 export function CardHeader({ className, ...props }) {
@@ -15,7 +15,7 @@ export function CardHeader({ className, ...props }) {
       className={`flex flex-col space-y-1.5 p-6 ${className}`}
       {...props}
     />
-  )
+  );
 }
 
 export function CardTitle({ className, ...props }) {
@@ -24,11 +24,11 @@ export function CardTitle({ className, ...props }) {
       className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
       {...props}
     />
-  )
+  );
 }
 
 export function CardContent({ className, ...props }) {
   return (
     <div className={`p-6 pt-0 ${className}`} {...props} />
-  )
+  );
 }

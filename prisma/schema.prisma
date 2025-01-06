@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Schedule {
+  id          String    @id @default(cuid())
+  userId      String
+  managerId   String    // Add this line
+  user        User      @relation("UserSchedules", fields: [userId], references: [id])
+  manager     User      @relation("ManagerSchedules", fields: [managerId], references: [id]) // Add this line
+  month       String
+  year        String
+  shifts      Json
+  totalHours  String
+  status      ScheduleStatus @default(PENDING)
+  employeeName String    // Add this line
+  position    String    // Add this line
+  notes       String?   // Add this line
+  timeOff     String?   // Add this line
+  approvedBy  String?   // Add this line
+  approvalDate DateTime? // Add this line
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([managerId])
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String
+  name            String
+  role            UserRole  @default(STUDENT)
+  studentId       String?   @unique
+  office          String?
+  managerId       String?
+  manager         User?     @relation("ManagerStudents", fields: [managerId], references: [id])
+  students        User[]    @relation("ManagerStudents")
+  schedules       Schedule[] @relation("UserSchedules")     // Update this line
+  managedSchedules Schedule[] @relation("ManagerSchedules") // Add this line
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+enum UserRole {
+
+  ADMIN
+  MANAGER
+  STUDENT
+}
+
+enum ScheduleStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
