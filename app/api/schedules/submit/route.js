@@ -13,14 +13,18 @@ export async function POST(request) {
     if (!session?.user?.email) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Unauthorized - No user ID found' 
+        error: 'Unauthorized' 
       }, { status: 401 });
     }
 
-    // Get user by email
+    // First, get the user by email
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: {
+        email: session.user.email
+      }
     });
+
+    console.log('Found user:', user);
 
     if (!user) {
       return NextResponse.json({ 
@@ -32,18 +36,17 @@ export async function POST(request) {
     const scheduleData = await request.json();
     console.log('Schedule data:', scheduleData);
 
-    // Create the schedule record with proper user and manager connections
+    // Stringify the shifts array
+    const shiftsJson = JSON.stringify(scheduleData.shifts);
+
+    // Create the schedule record with userId and managerId directly
     const schedule = await prisma.schedule.create({
       data: {
-        user: {
-          connect: { studentId: session.user.studentId }  // Connect existing user
-        },
-        manager: {
-          connect: { id: scheduleData.managerId }  // Connect existing manager
-        },
+        userId: user.id,           // Use userId directly instead of connect
+        managerId: scheduleData.managerId,  // Use managerId directly
         month: scheduleData.month,
         year: scheduleData.year,
-        shifts: scheduleData.shifts,
+        shifts: shiftsJson,        // Use the stringified shifts
         totalHours: scheduleData.totalHours?.toString() || "0",
         status: 'PENDING',
         employeeName: scheduleData.employeeName,
@@ -61,10 +64,7 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('Schedule submission error:', {
-      error: error.message,
-      stack: error.stack
-    });
+    console.error('Schedule submission error:', error);
     
     return NextResponse.json({
       success: false,
