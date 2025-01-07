@@ -259,7 +259,6 @@ const WorkSchedule = ({
                     localStorage.removeItem('scheduleData');
                     
                     // Show success message and redirect
-                    alert('Schedule submitted successfully!');
                     router.push('/dashboard/student');
                 }
             } catch (error) {
