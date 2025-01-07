@@ -69,6 +69,7 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        console.log('JWT Callback - User:', user);
         return {
           ...token,
           id: user.id,
@@ -80,17 +81,23 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          role: token.role,
-          studentId: token.studentId,
-          office: token.office,
-        }
+      console.log('Session Callback - Token:', token);
+      if (session.user) {
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.id,
+            role: token.role,
+            studentId: token.studentId,
+            office: token.office,
+          }
+      
       };
     }
+    return session;
+  }
+
   },
   pages: {
     signIn: '/login',
@@ -98,6 +105,7 @@ const handler = NextAuth({
   session: {
     strategy: 'jwt',
   },
+  debug: true
 });
 
 export { handler as GET, handler as POST };
