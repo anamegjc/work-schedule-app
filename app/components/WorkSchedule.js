@@ -231,7 +231,10 @@ const WorkSchedule = ({
             }
         
             try {
-                console.log('Submitting data:', {
+                // Get the current draft ID if it exists
+                const currentDraft = JSON.parse(localStorage.getItem('scheduleData') || '{}');
+                
+                const result = await onSubmit({
                     managerId: selectedManager,
                     employeeName: formData.employeeName,
                     position: formData.position,
@@ -240,35 +243,22 @@ const WorkSchedule = ({
                     shifts: formData.shifts,
                     totalHours: formData.totalHours,
                     notes: formData.notes,
-                    timeOff: formData.timeOff
+                    timeOff: formData.timeOff,
+                    draftId: currentDraft.draftId // Include the draft ID
                 });
-        
-                const res = await fetch('/api/schedules/submit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        managerId: selectedManager,
-                        employeeName: formData.employeeName,
-                        position: formData.position,
-                        month: formData.month,
-                        year: formData.year,
-                        shifts: formData.shifts,
-                        totalHours: formData.totalHours,
-                        notes: formData.notes,
-                        timeOff: formData.timeOff
-                    }),
-                });
-        
-                const data = await res.json();
-        
-                if (!res.ok) {
-                    throw new Error(data.error || 'Failed to submit schedule');
-                }
-        
-                if (data.success) {
+                
+                if (result.success) {
+                    // Remove from drafts if it was a draft
+                    if (currentDraft.draftId) {
+                        const drafts = JSON.parse(localStorage.getItem('scheduleDrafts') || '[]');
+                        const updatedDrafts = drafts.filter(draft => draft.draftId !== currentDraft.draftId);
+                        localStorage.setItem('scheduleDrafts', JSON.stringify(updatedDrafts));
+                    }
+                    
+                    // Clear the current schedule data
                     localStorage.removeItem('scheduleData');
+                    
+                    // Show success message and redirect
                     alert('Schedule submitted successfully!');
                     router.push('/dashboard/student');
                 }
@@ -276,24 +266,6 @@ const WorkSchedule = ({
                 console.error('Error submitting schedule:', error);
                 alert('Failed to submit schedule: ' + error.message);
             }
-
-            try {
-                // Get the current draft ID if it exists
-                const currentDraft = JSON.parse(localStorage.getItem('scheduleData') || '{}');
-                
-                const result = await onSubmit({
-                  ...formData,
-                  managerId: selectedManager,
-                  draftId: currentDraft.draftId // Include the draft ID
-                });
-                
-                if (result.success) {
-                  router.push('/dashboard/student');
-                }
-              } catch (error) {
-                console.error('Error submitting schedule:', error);
-                alert('Failed to submit schedule: ' + error.message);
-              }
         };
 
         const handleApproval = () => {
