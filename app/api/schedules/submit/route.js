@@ -7,8 +7,7 @@ const prisma = new PrismaClient();
 
 export async function POST(request) {
   try {
-    // Add logging to debug the request
-    console.log('Received schedule submission request');
+    console.log('Starting schedule submission');
     
     const session = await getServerSession(authOptions);
     console.log('Session:', session);
@@ -17,14 +16,20 @@ export async function POST(request) {
       return NextResponse.json({ 
         success: false, 
         error: 'Unauthorized' 
-      }, { 
-        status: 401 
-      });
+      }, { status: 401 });
     }
 
     const scheduleData = await request.json();
-    console.log('Schedule data:', scheduleData);
-    
+    console.log('Received data:', scheduleData);
+
+    // Validate required fields
+    if (!scheduleData.managerId || !scheduleData.employeeName || !scheduleData.month || !scheduleData.year) {
+      return NextResponse.json({
+        success: false,
+        error: 'Missing required fields'
+      }, { status: 400 });
+    }
+
     // Create the schedule record
     const schedule = await prisma.schedule.create({
       data: {
@@ -32,15 +37,17 @@ export async function POST(request) {
         managerId: scheduleData.managerId,
         month: scheduleData.month,
         year: scheduleData.year,
-        shifts: JSON.stringify(scheduleData.shifts),
+        shifts: scheduleData.shifts, // Prisma will automatically stringify this
         totalHours: scheduleData.totalHours.toString(),
         status: 'PENDING',
         employeeName: scheduleData.employeeName,
-        position: scheduleData.position,
-        notes: scheduleData.notes || '',
-        timeOff: scheduleData.timeOff || ''
+        position: scheduleData.position || 'Student Worker', // Provide default if missing
+        notes: scheduleData.notes || null,
+        timeOff: scheduleData.timeOff || null,
       }
     });
+
+    console.log('Schedule created:', schedule);
 
     return NextResponse.json({
       success: true,
@@ -48,16 +55,12 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('Schedule submission error:', {
-      message: error.message,
-      stack: error.stack
-    });
-    
+    console.error('Schedule submission error:', error);
     return NextResponse.json({
       success: false,
-      error: error.message || 'Failed to submit schedule'
-    }, { 
-      status: 500 
-    });
+      error: 'Failed to submit schedule: ' + (error.message || 'Unknown error')
+    }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }

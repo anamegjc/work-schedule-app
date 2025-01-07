@@ -220,24 +220,61 @@ const WorkSchedule = ({
         };
 
         const handleSubmitForApproval = async () => {
-            // Add console.log to see what's being sent
-            console.log('Submitting schedule data:', {
-            ...formData,
-            managerId: selectedManager
-            });
+            if (!selectedManager) {
+                alert('Please select a manager');
+                return;
+            }
+        
+            if (!formData.employeeName) {
+                alert('Please enter employee name');
+                return;
+            }
         
             try {
-            const result = await onSubmit({
-                ...formData,
-                managerId: selectedManager
-            });
-            
-            if (window.confirm('Schedule sent to manager for approval\nClick OK to return to dashboard')) {
-                router.push('/dashboard/student');
-            }
+                console.log('Submitting data:', {
+                    managerId: selectedManager,
+                    employeeName: formData.employeeName,
+                    position: formData.position,
+                    month: formData.month,
+                    year: formData.year,
+                    shifts: formData.shifts,
+                    totalHours: formData.totalHours,
+                    notes: formData.notes,
+                    timeOff: formData.timeOff
+                });
+        
+                const res = await fetch('/api/schedules/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        managerId: selectedManager,
+                        employeeName: formData.employeeName,
+                        position: formData.position,
+                        month: formData.month,
+                        year: formData.year,
+                        shifts: formData.shifts,
+                        totalHours: formData.totalHours,
+                        notes: formData.notes,
+                        timeOff: formData.timeOff
+                    }),
+                });
+        
+                const data = await res.json();
+        
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to submit schedule');
+                }
+        
+                if (data.success) {
+                    localStorage.removeItem('scheduleData');
+                    alert('Schedule submitted successfully!');
+                    router.push('/dashboard/student');
+                }
             } catch (error) {
-            console.error('Error submitting schedule:', error);
-            alert('Failed to submit schedule: ' + error.message);
+                console.error('Error submitting schedule:', error);
+                alert('Failed to submit schedule: ' + error.message);
             }
         };
 

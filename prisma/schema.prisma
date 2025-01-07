@@ -49,8 +49,6 @@ model User {
 }
 
 enum UserRole {
-
-
   ADMIN
   MANAGER
   STUDENT
