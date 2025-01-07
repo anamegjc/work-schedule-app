@@ -10,11 +10,23 @@ export async function POST(request) {
     const session = await getServerSession(authOptions);
     console.log('Current session:', session);
 
-    if (!session?.user?.id) {
+    if (!session?.user?.studentId) {
       return NextResponse.json({ 
         success: false, 
         error: 'Unauthorized - No user ID found' 
       }, { status: 401 });
+    }
+
+    // Get user by email
+    const user = await prisma.user.findUnique({
+      where: { studentId: session.user.studentId }
+    });
+
+    if (!user) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'User not found' 
+      }, { status: 404 });
     }
 
     const scheduleData = await request.json();
@@ -24,7 +36,7 @@ export async function POST(request) {
     const schedule = await prisma.schedule.create({
       data: {
         user: {
-          connect: { id: session.user.id }  // Connect existing user
+          connect: { studentId: session.user.studentId }  // Connect existing user
         },
         manager: {
           connect: { id: scheduleData.managerId }  // Connect existing manager
