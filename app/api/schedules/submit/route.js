@@ -10,7 +10,7 @@ export async function POST(request) {
     const session = await getServerSession(authOptions);
     console.log('Current session:', session);
 
-    if (!session?.user?.studentId) {
+    if (!session?.user?.email) {
       return NextResponse.json({ 
         success: false, 
         error: 'Unauthorized - No user ID found' 
