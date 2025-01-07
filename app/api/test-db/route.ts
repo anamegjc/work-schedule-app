@@ -1,4 +1,3 @@
-// You can create a test API route to verify database connection
 // app/api/test-db/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
@@ -7,13 +6,23 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
+    // Test the connection
     await prisma.$connect();
-    return NextResponse.json({ status: 'Database connected successfully' });
+    
+    // Try to get a count of users
+    const userCount = await prisma.user.count();
+    
+    return NextResponse.json({ 
+      status: 'Connected to database', 
+      userCount: userCount 
+    });
   } catch (error) {
-    console.error('Database connection error:', error);
-    return new NextResponse(
-      'Database connection failed: ' + (error instanceof Error ? error.message : 'Unknown error'),
-      { status: 500 }
-    );
+    console.error('Database error:', error);
+    return NextResponse.json({ 
+      error: 'Database connection failed', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }

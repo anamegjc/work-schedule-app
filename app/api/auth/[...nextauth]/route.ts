@@ -14,7 +14,10 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        const prisma = new PrismaClient();
         try {
+          console.log('Login attempt for:', credentials?.email);
+
           if (!credentials?.email || !credentials?.password) {
             console.log('Missing credentials');
             return null;
@@ -24,15 +27,19 @@ const handler = NextAuth({
             where: { email: credentials.email }
           });
 
+          console.log('User found:', !!user);
+
           if (!user) {
             console.log('User not found');
             return null;
           }
 
           const isPasswordValid = await bcrypt.compare(
-            credentials.password, 
+            credentials.password,
             user.password
           );
+
+          console.log('Password valid:', isPasswordValid);
 
           if (!isPasswordValid) {
             console.log('Invalid password');
@@ -48,8 +55,13 @@ const handler = NextAuth({
             office: user.office ?? undefined,
           };
         } catch (error) {
-          console.error('Authorization error:', error);
+          console.error('Authorization error details:', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined
+          });
           return null;
+        } finally {
+          await prisma.$disconnect();
         }
       }
     })
