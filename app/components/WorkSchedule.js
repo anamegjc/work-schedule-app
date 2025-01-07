@@ -276,6 +276,24 @@ const WorkSchedule = ({
                 console.error('Error submitting schedule:', error);
                 alert('Failed to submit schedule: ' + error.message);
             }
+
+            try {
+                // Get the current draft ID if it exists
+                const currentDraft = JSON.parse(localStorage.getItem('scheduleData') || '{}');
+                
+                const result = await onSubmit({
+                  ...formData,
+                  managerId: selectedManager,
+                  draftId: currentDraft.draftId // Include the draft ID
+                });
+                
+                if (result.success) {
+                  router.push('/dashboard/student');
+                }
+              } catch (error) {
+                console.error('Error submitting schedule:', error);
+                alert('Failed to submit schedule: ' + error.message);
+              }
         };
 
         const handleApproval = () => {

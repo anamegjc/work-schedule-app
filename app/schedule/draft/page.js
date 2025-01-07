@@ -39,11 +39,22 @@ export default function DraftSchedule() {
       }
 
       if (data.success) {
-        // Remove the draft when successfully submitted
+        // Get the current drafts
         const drafts = JSON.parse(localStorage.getItem('scheduleDrafts') || '[]');
-        const updatedDrafts = drafts.filter(d => d.draftId !== scheduleData.draftId);
+        
+        // Remove the current draft from the list
+        const currentDraft = JSON.parse(localStorage.getItem('scheduleData') || '{}');
+        const updatedDrafts = drafts.filter(draft => 
+          draft.draftId !== currentDraft.draftId
+        );
+        
+        // Update localStorage
         localStorage.setItem('scheduleDrafts', JSON.stringify(updatedDrafts));
         localStorage.removeItem('scheduleData');
+        
+        // Show success message and redirect
+        alert('Schedule submitted successfully');
+        router.push('/dashboard/student');
         return { success: true };
       } else {
         throw new Error('Failed to submit schedule');
@@ -59,7 +70,7 @@ export default function DraftSchedule() {
       role="STUDENT"
       managers={managers}
       onSubmit={handleSubmit}
-      isNewSchedule={false} // This ensures we load the saved draft data
+      isNewSchedule={false}
     />
   );
 }
