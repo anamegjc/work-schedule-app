@@ -110,34 +110,6 @@ export default function ManagerDashboard() {
     }
   };
 
-  const handleViewAction = async () => {
-    if (!selectedScheduleId || !selectedAction) return;
-  
-    try {
-      const res = await fetch('/api/schedules/manager', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          scheduleId: selectedScheduleId, 
-          action: selectedAction 
-        })
-      });
-    
-      const result: { success: boolean; error?: string } = await res.json();
-    
-      if (!result.success) {
-        throw new Error(result.error || 'Unknown error occurred');
-      }
-    
-
-    } catch (error) {
-      console.error(`Error performing action:`, error);
-      alert(`Failed to perform action: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  };
-
   const openActionDropdown = (scheduleId: string) => {
     setOpenDropdownId(openDropdownId === scheduleId ? null : scheduleId);
     setSelectedScheduleId(scheduleId);
@@ -263,9 +235,10 @@ export default function ManagerDashboard() {
                     </p>
                   </div>
                   <button
-                    onClick={handleViewAction}
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    onClick={() => router.push(`/schedule/${schedule.id}/review`)}
+                    className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                   >
+                    <Eye size={16} />
                     View
                   </button>
                 </div>
