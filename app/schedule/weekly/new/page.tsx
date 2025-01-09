@@ -29,7 +29,7 @@ export default function NewWeeklySchedule() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(scheduleData),
+        body: JSON.stringify({...scheduleData, type: 'weekly'}),
       });
 
       const data = await res.json();
