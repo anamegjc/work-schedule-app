@@ -133,8 +133,8 @@ const WeeklySchedule = ({
       const result = await onSubmit({
         ...formData,
         managerId: selectedManager,
-        year: startDate.getFullYear().toString(),  // Explicitly send the year
-        month: startDate.toLocaleString('default', { month: 'long' }),
+        year: weekStartDate.getFullYear().toString(),  // Explicitly send the year
+        month: weekStartDate.toLocaleString('default', { month: 'long' }),
         type: 'weekly'
       });
 
