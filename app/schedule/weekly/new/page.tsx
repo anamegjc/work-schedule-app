@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import WorkSchedule from '../../components/WorkSchedule';
+import WeeklySchedule from '../../../components/WeeklySchedule';
 
-export default function NewSchedule() {
+export default function NewWeeklySchedule() {
   const [managers, setManagers] = useState([]);
   const router = useRouter();
 
@@ -22,7 +22,7 @@ export default function NewSchedule() {
     }
   };
 
-  const handleSubmit = async (scheduleData) => {
+  const handleSubmit = async (scheduleData: any) => {
     try {
       const res = await fetch('/api/schedules/submit', {
         method: 'POST',
@@ -52,7 +52,7 @@ export default function NewSchedule() {
   };
 
   return (
-    <WorkSchedule 
+    <WeeklySchedule 
       role="STUDENT"
       managers={managers}
       onSubmit={handleSubmit}

@@ -20,6 +20,7 @@ export default function StudentDashboard() {
   const [draftSchedules, setDraftSchedules] = useState<any[]>([]);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const router = useRouter();
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
 
   useEffect(() => {
     fetchSchedules();
@@ -99,16 +100,70 @@ export default function StudentDashboard() {
     }
   };
 
+  const ScheduleTypeModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-96">
+        <h3 className="text-lg font-bold mb-4">Select Schedule Type</h3>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <input 
+              type="radio" 
+              id="monthly" 
+              name="scheduleType" 
+              value="monthly"
+              onChange={(e) => setSelectedType(e.target.value)}
+            />
+            <label htmlFor="monthly">Monthly Work Schedule</label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <input 
+              type="radio" 
+              id="weekly" 
+              name="scheduleType" 
+              value="weekly"
+              onChange={(e) => setSelectedType(e.target.value)}
+            />
+            <label htmlFor="weekly">Weekly Work Schedule</label>
+          </div>
+          <div className="flex justify-end space-x-2 mt-6">
+            <button
+              onClick={() => setShowScheduleModal(false)}
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleScheduleTypeSelect}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              disabled={!selectedType}
+            >
+              Go
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const [selectedType, setSelectedType] = useState('');
+
+  const handleScheduleTypeSelect = () => {
+    localStorage.removeItem('scheduleData');
+    if (selectedType === 'monthly') {
+      router.push('/schedule/monthly/new');
+    } else {
+      router.push('/schedule/weekly/new');
+    }
+    setShowScheduleModal(false);
+  };
+
   return (
     <div className="space-y-6 p-6">
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">My Schedules</h2>
           <button
-            onClick={() => {
-                localStorage.removeItem('scheduleData'); // Clear any existing data
-                router.push('/schedule/new')
-            }}
+            onClick={() => setShowScheduleModal(true)}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Create New Schedule
@@ -253,6 +308,7 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
+      {showScheduleModal && <ScheduleTypeModal />}
     </div>
   );
 }
