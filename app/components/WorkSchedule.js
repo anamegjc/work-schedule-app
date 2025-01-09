@@ -38,7 +38,7 @@ const WorkSchedule = ({
 
       useEffect(() => {
         if (initialData) {
-          setFormData({initialData, draftId: initialData.draftId});
+          setFormData({...initialData, draftId: initialData.draftId});
           
         } else if (!isNewSchedule){
           const savedData = localStorage.getItem('scheduleData');
