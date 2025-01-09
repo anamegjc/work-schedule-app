@@ -38,7 +38,8 @@ const WorkSchedule = ({
 
       useEffect(() => {
         if (initialData) {
-          setFormData(initialData);
+          setFormData({initialData, draftId: initialData.draftId});
+          
         } else if (!isNewSchedule){
           const savedData = localStorage.getItem('scheduleData');
           if (savedData) {
@@ -55,7 +56,8 @@ const WorkSchedule = ({
                 shifts: normalizedShifts,
                 totalHours: parsedData.totalHours || '0',
                 approvalStatus: parsedData.approvalStatus || 'pending',
-                approvalDate: parsedData.approvalDate || ''
+                approvalDate: parsedData.approvalDate || '',
+                draftId: parsedData.draftId // Preserve the draftId here as well
               });
             } catch (error) {
               console.error('Error parsing saved data:', error);
@@ -75,6 +77,46 @@ const WorkSchedule = ({
             drafts.push(draftData);
             localStorage.setItem('scheduleDrafts', JSON.stringify(drafts));
             alert('Schedule saved as draft');
+            router.push('/dashboard/student');
+        };
+
+                // Add function to update draft
+        const updateDraft = () => {
+            // Get all existing drafts
+            const drafts = JSON.parse(localStorage.getItem('scheduleDrafts') || '[]');
+            
+            // Get the current draft ID from the form data
+            const currentDraftId = formData.draftId;
+            
+            if (!currentDraftId) {
+                alert('No draft ID found. Unable to update.');
+                return;
+            }
+            
+            // Find the index of the current draft
+            const draftIndex = drafts.findIndex(draft => draft.draftId === currentDraftId);
+            
+            if (draftIndex === -1) {
+                alert('Draft not found. Unable to update.');
+                return;
+            }
+            
+            // Create updated draft data
+            const updatedDraftData = {
+                ...formData,
+                lastModified: new Date().toISOString()
+            };
+            
+            // Update the draft at the found index
+            drafts[draftIndex] = updatedDraftData;
+            
+            // Save the updated drafts array back to localStorage
+            localStorage.setItem('scheduleDrafts', JSON.stringify(drafts));
+            
+            // Also update the current schedule data in localStorage
+            localStorage.setItem('scheduleData', JSON.stringify(updatedDraftData));
+            
+            alert('Draft Updated Successfully');
             router.push('/dashboard/student');
         };
 
