@@ -134,7 +134,7 @@ const WeeklySchedule = ({
         // Create a Date object from the weekStartDate string
       const startDate = new Date(formData.weekStartDate);
 
-      const result = await onSubmit({
+      const submitData = ({
         ...formData,
         managerId: selectedManager,
         year: startDate.getFullYear().toString(),  // Explicitly send the year
@@ -142,14 +142,42 @@ const WeeklySchedule = ({
         type: 'weekly'
       });
 
+      console.log('Submitting data:', submitData);
+
+      const result = await onSubmit(submitData);
+
+      // Add more detailed error checking
+      if (!result) {
+        throw new Error('No response received from server');
+      }
+
+      // Log the response
+      console.log('Server response:', result);
+
       if (result.success) {
         localStorage.removeItem('weeklyScheduleData');
         router.push('/dashboard/student');
+    } else {
+        // Handle non-success response
+        throw new Error(result.message || 'Server returned unsuccessful response');
       }
     } catch (error) {
-      console.error('Error submitting schedule:', error);
-      alert('Failed to submit schedule: ' + error.message);
-    }
+        console.error('Full error details:', error);
+        console.error('Error type:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+  
+        // Provide more specific error message to user
+        let errorMessage = 'Failed to submit schedule: ';
+        if (error.message.includes('Unexpected end of JSON input')) {
+          errorMessage += 'Server returned an empty response. Please try again or contact support.';
+        } else {
+          errorMessage += error.message;
+        }
+        
+        alert(errorMessage);
+      }
+
   };
 
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
