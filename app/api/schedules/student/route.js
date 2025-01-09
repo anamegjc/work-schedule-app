@@ -79,7 +79,7 @@ export async function PATCH(request) {
           await prisma.schedule.delete({
             where: { 
                 id: scheduleId,
-                userId: session.user.id,
+                userId: user.id,
                 status: 'PENDING'
             }
                     
