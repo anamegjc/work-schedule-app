@@ -25,7 +25,7 @@ export async function GET() {
     // Fetch only schedules belonging to the current user
     const schedules = await prisma.schedule.findMany({
       where: {
-        userId: user.id // Filter by the current user's ID
+        userId: session.user.id // Filter by the current user's ID
       },
       orderBy: {
         createdAt: 'desc'
@@ -44,3 +44,49 @@ export async function GET() {
     await prisma.$disconnect();
   }
 }
+
+export async function PATCH(request) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Unauthorized' 
+      }, { 
+        status: 401 
+      });
+    }
+
+    const { scheduleId, action } = await request.json();
+  
+      switch (action) {
+        case 'delete':
+          await prisma.schedule.delete({
+            where: { 
+                id: scheduleId,
+                userID: session.user.id,
+                status: 'PENDING'
+            }
+                    
+          });
+          break;
+        default:
+          return NextResponse.json(
+            { success: false, error: 'Invalid action' }, 
+            { status: 400 }
+          );
+      }
+  
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      console.error('Schedule action error:', error);
+      
+      return NextResponse.json({
+        success: false,
+        error: error.message || 'Failed to perform action'
+      }, { 
+        status: 500 
+      });
+    }
+  }
