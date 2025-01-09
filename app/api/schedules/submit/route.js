@@ -44,7 +44,7 @@ export async function POST(request) {
       data: {
         userId: user.id,           // Use userId directly instead of connect
         managerId: scheduleData.managerId,  // Use managerId directly
-        month: scheduleData.month,
+        month: scheduleData.month || null,
         year: scheduleData.year,
         shifts: shiftsJson,        // Use the stringified shifts
         totalHours: scheduleData.totalHours?.toString() || "0",
