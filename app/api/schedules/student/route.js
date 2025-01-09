@@ -25,7 +25,7 @@ export async function GET() {
     // Fetch only schedules belonging to the current user
     const schedules = await prisma.schedule.findMany({
       where: {
-        userId: session.user.id // Filter by the current user's ID
+        userId: user.id // Filter by the current user's ID
       },
       orderBy: {
         createdAt: 'desc'
