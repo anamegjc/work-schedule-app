@@ -58,6 +58,20 @@ export async function PATCH(request) {
       });
     }
 
+     // Get the current user
+     const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'User not found' 
+      }, { 
+        status: 404 
+      });
+    }
+
     const { scheduleId, action } = await request.json();
   
       switch (action) {
@@ -88,5 +102,7 @@ export async function PATCH(request) {
       }, { 
         status: 500 
       });
+    } finally {
+      await prisma.$disconnect();
     }
   }
