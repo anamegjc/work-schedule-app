@@ -9,7 +9,7 @@ export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ 
         success: false, 
         error: 'Unauthorized' 
@@ -29,6 +29,7 @@ export async function GET(request) {
     });
 
     return NextResponse.json(schedules);
+    
   } catch (error) {
     console.error('Error fetching student schedules:', error);
     
