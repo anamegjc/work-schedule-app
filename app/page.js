@@ -5,28 +5,35 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (session?.user) {
-      switch (session.user.role) {
-        case 'ADMIN':
-          router.push('/dashboard/admin');
-          break;
-        case 'MANAGER':
-          router.push('/dashboard/manager');
-          break;
-        case 'STUDENT':
-          router.push('/dashboard/student');
-          break;
-        default:
-          router.push('/login');
-      }
-    } else {
+    if (status === 'loading') return;
+
+    if (!session?.user) {
       router.push('/login');
+      return;
     }
-  }, [session, router]);
+
+    switch (session.user.role) {
+      case 'ADMIN':
+        router.push('/dashboard/admin');
+        break;
+      case 'MANAGER':
+        router.push('/dashboard/manager');
+        break;
+      case 'STUDENT':
+        router.push('/dashboard/student');
+        break;
+      default:
+        router.push('/login');
+    }
+  }, [session, status, router]);
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
 
   return null;
 }
