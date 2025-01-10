@@ -13,7 +13,7 @@ interface Schedule {
   status: string;
   totalHours: string;
   approvalDate?: string;
-  type: 'weekly' | 'monthly';
+  type: 'weekly' | 'monthly'| null;
 }
 
 export default function ManagerDashboard() {
@@ -142,26 +142,28 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
  const handleViewSchedule = (schedule: Schedule) => {
   console.log('handleViewSchedule called');
   console.log('Schedule received:', schedule);
-  console.log('Schedule type:', schedule.type);
-  console.log('Schedule ID:', schedule.id);
   
   try {
-    // Verify router is initialized
-    console.log('Router object:', router);
+    // Default to 'monthly' if type is null
+    const scheduleType = schedule.type || 'monthly';
+    console.log('Using schedule type:', scheduleType);
     
-    // Save to localStorage
-    localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
+    // Save to localStorage with the defaulted type
+    const scheduleWithType = {
+      ...schedule,
+      type: scheduleType
+    };
+    localStorage.setItem('viewScheduleData', JSON.stringify(scheduleWithType));
     console.log('Data saved to localStorage');
     
-    // Construct and log the route
-    const route = schedule.type === 'weekly' 
+    // Construct route using the defaulted type
+    const route = scheduleType === 'weekly'
       ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
       : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
     console.log('Attempting to navigate to:', route);
     
-    // Simple router push without catch
     router.push(route);
-  } catch (error: unknown) { // Explicitly type the error
+  } catch (error: unknown) {
     console.error('Error in handleViewSchedule:', error);
   }
 };
