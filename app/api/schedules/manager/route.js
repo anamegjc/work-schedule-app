@@ -23,10 +23,25 @@ export async function GET(request) {
         where: {
           managerId: session.user.id
         },
+        select: {
+          id: true,
+          employeeName: true,
+          month: true,
+          year: true,
+          status: true,
+          totalHours: true,
+          approvalDate: true,
+          type: true,    // Make sure this field exists in your schema
+          managerId: true,
+          createdAt: true
+        },
         orderBy: {
           createdAt: 'desc'
         }
       });
+
+      // Log the schedules for debugging
+      console.log('Fetched schedules:', schedules);
 
       return NextResponse.json(schedules);
   } catch (error) {

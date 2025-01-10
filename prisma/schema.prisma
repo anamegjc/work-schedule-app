@@ -18,6 +18,7 @@ model Schedule {
   shifts      Json
   totalHours  String
   status      ScheduleStatus @default(PENDING)
+  type        String?     // Add this line
   employeeName String    // Add this line
   position    String    // Add this line
   notes       String?   // Add this line
@@ -29,6 +30,7 @@ model Schedule {
 
   @@index([userId])
   @@index([managerId])
+  
 }
 
 model User {
