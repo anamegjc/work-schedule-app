@@ -7,8 +7,8 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
-): Promise<NextResponse> {
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -21,7 +21,7 @@ export async function GET(
 
     const schedule = await prisma.schedule.findUnique({
       where: {
-        id: context.params.id,
+        id: params.id,
       },
       include: {
         manager: true,
