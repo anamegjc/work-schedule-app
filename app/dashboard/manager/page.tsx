@@ -138,35 +138,31 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
     setOpenDropdownId(null); // Close the dropdown when an action is selected
   };
 
- // In your ManagerDashboard component
- const handleViewSchedule = (schedule: Schedule) => {
-  console.log('handleViewSchedule called');
-  console.log('Schedule received:', schedule);
+  const handleViewSchedule = async (schedule: Schedule) => {
+    console.log('handleViewSchedule called with schedule:', schedule);
+    
+    try {
+      const scheduleType = schedule.type || 'monthly';
+      const route = scheduleType === 'weekly'
+        ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
+        : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
+      
+      // Store in localStorage before navigation
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
+          console.log('Schedule data stored in localStorage');
+        } catch (storageError) {
+          console.error('Error storing in localStorage:', storageError);
+        }
+      }
   
-  try {
-    // Default to 'monthly' if type is null
-    const scheduleType = schedule.type || 'monthly';
-    console.log('Using schedule type:', scheduleType);
-    
-    // Save to localStorage with the defaulted type
-    const scheduleWithType = {
-      ...schedule,
-      type: scheduleType
-    };
-    localStorage.setItem('viewScheduleData', JSON.stringify(scheduleWithType));
-    console.log('Data saved to localStorage');
-    
-    // Construct route using the defaulted type
-    const route = scheduleType === 'weekly'
-      ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
-      : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
-    console.log('Attempting to navigate to:', route);
-    
-    router.push(route);
-  } catch (error: unknown) {
-    console.error('Error in handleViewSchedule:', error);
-  }
-};
+      console.log('Attempting navigation to:', route);
+      await router.push(route);
+    } catch (error: unknown) {
+      console.error('Error in handleViewSchedule:', error);
+    }
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -284,7 +280,7 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
                     </p>
                   </div>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       console.log('View button clicked for schedule:', schedule); // Debug log
                       handleViewSchedule(schedule);
                     }}
