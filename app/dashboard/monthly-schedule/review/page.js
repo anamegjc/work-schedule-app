@@ -83,18 +83,21 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
-export default function ScheduleReview() {
+export default function MonthlyScheduleReview() {
+    const { data: session, status } = useSession();
   const [schedule, setSchedule] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const searchParams = useSearchParams();
   const scheduleId = searchParams.get('id');
+  const id = searchParams.get('id');
 
   useEffect(() => {
     async function fetchSchedule() {
 
-        if (!scheduleId) return;
+        if (!id || status !== 'authenticated') return;
 
       try {
         const response = await fetch(`/api/schedules/${scheduleId}`);
@@ -114,9 +117,9 @@ export default function ScheduleReview() {
 
     fetchSchedule();
     
-  }, [scheduleId]);
+  }, [id, status, scheduleId]);
 
-  if (loading) {
+  if (status === 'loading' || loading) {
     return <div className="p-6">Loading schedule...</div>;
   }
 

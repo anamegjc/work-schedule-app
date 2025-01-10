@@ -142,17 +142,18 @@ export default function ManagerDashboard() {
   };
 
   const handleViewSchedule = (schedule: Schedule) => {
-    console.log('handleViewSchedule called');
+    console.log('handleViewSchedule called', schedule);
     try {
       // Since we know it's an approved schedule, we'll use monthly-schedule path
       const route = `/dashboard/monthly-schedule/review?id=${schedule.id}`;
       console.log('Attempting to navigate to:', route);
       
+      router.push(route)
       // We should also log the router to make sure it's initialized
       console.log('Router before navigation:', router);
       
       // Try to force a hard navigation if the router push isn't working
-      window.location.href = `/dashboard/monthly-schedule/review?id=${schedule.id}`;
+      //window.location.href = `/dashboard/monthly-schedule/review?id=${schedule.id}`;
     } catch (error) {
       console.error('Error in handleViewSchedule:', error);
       alert('Error viewing schedule. Please try again.');

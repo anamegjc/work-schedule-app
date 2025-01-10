@@ -1,12 +1,19 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, useEffect } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
 export default function DashboardLayout({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
 
   if (status === 'loading') {
     return <div>Loading...</div>;
@@ -15,6 +22,10 @@ export default function DashboardLayout({ children }) {
   if (status === 'unauthenticated') {
     router.push('/login');
     return null;
+  }
+
+  if (!session) {
+    return <div>Loading...</div>;
   }
 
   return (
