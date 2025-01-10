@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import WorkSchedule from '@/components/WorkSchedule'; // Adjust the import path based on your project structure
+import WorkSchedule from '@app/components/WorkSchedule'; // Adjust the import path based on your project structure
 
 export default function MonthlyScheduleReview() {
   const [scheduleData, setScheduleData] = useState(null);
