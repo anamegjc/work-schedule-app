@@ -13,15 +13,16 @@ export default function MonthlyScheduleReview() {
   const [scheduleData, setScheduleData] = useState(null);
   const searchParams = useSearchParams();
   const scheduleId = searchParams.get('id');
+  
 
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        console.log('Fetching schedule data...');
+        //console.log('Fetching schedule data...');
         // First try to get from localStorage
         const storedData = localStorage.getItem('viewScheduleData');
         if (storedData) {
-            console.log('Found data in localStorage');
+            //console.log('Found data in localStorage');
           const parsedData = JSON.parse(storedData);
           setScheduleData(parsedData);
           localStorage.removeItem('viewScheduleData');
@@ -30,9 +31,12 @@ export default function MonthlyScheduleReview() {
 
         // If not in localStorage, fetch from API
         if (scheduleId) {
-            console.log('Fetching from API for ID:', scheduleId);
+            //console.log('Fetching from API for ID:', scheduleId);
           const res = await fetch(`/api/schedules/${scheduleId}`);
-          if (!res.ok) throw new Error('Failed to fetch schedule');
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch schedule')
+            };
           const data = await res.json();
           setScheduleData(data);
         }
@@ -51,7 +55,7 @@ export default function MonthlyScheduleReview() {
         <p>Error: {error}</p>
         <button 
           onClick={() => router.back()}
-          className="mt-4 px-4 py-2 bg-gray-200 rounded"
+          className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
         >
           Go Back
         </button>

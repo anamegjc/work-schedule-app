@@ -142,20 +142,23 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
     console.log('handleViewSchedule called with schedule:', schedule);
     
     try {
-      const scheduleType = schedule.type || 'monthly';
-      const route = scheduleType === 'weekly'
-        ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
-        : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
-      
-      // Store in localStorage before navigation
+      // Store the schedule type in localStorage along with the data
       if (typeof window !== 'undefined') {
         try {
-          localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
+          localStorage.setItem('viewScheduleData', JSON.stringify({
+            ...schedule,
+            type: schedule.type || 'monthly' // Use existing type or default to monthly
+          }));
           console.log('Schedule data stored in localStorage');
         } catch (storageError) {
           console.error('Error storing in localStorage:', storageError);
         }
       }
+  
+      // Determine the route based on schedule type
+      const route = schedule.type === 'weekly' 
+        ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
+        : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
   
       console.log('Attempting navigation to:', route);
       await router.push(route);
