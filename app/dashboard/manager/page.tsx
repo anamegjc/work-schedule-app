@@ -34,24 +34,33 @@ export default function ManagerDashboard() {
       }
 
       // Check content type
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Response is not JSON');
-      }
+      // const contentType = res.headers.get('content-type');
+      // if (!contentType || !contentType.includes('application/json')) {
+      //   throw new Error('Response is not JSON');
+      // }
 
       // Check response body
       const text = await res.text();
+      console.log('Raw API response:', text); // Debug log
+
       if (!text.trim()) {
         throw new Error('Empty response body');
       }
 
       // Parse JSON
       const data = JSON.parse(text);
+      console.log('Parsed schedule data:', data); // Debug log
+
 
       const schedules = Array.isArray(data) 
         ? data 
         : data.schedules || data.data || [];
-
+      
+      // Ensure type property exists
+      const processedSchedules = schedules.map((schedule: Schedule) => ({
+        ...schedule,
+        type: schedule.type || 'monthly' // Default to monthly if type is missing
+      }));
       setPendingSchedules(schedules.filter((s: Schedule) => s.status === 'PENDING'));
       setApprovedSchedules(schedules.filter((s: Schedule) => s.status === 'APPROVED'));
     } catch (error) {
@@ -124,12 +133,21 @@ export default function ManagerDashboard() {
   };
 
  // In your ManagerDashboard component
-const handleViewSchedule = (schedule: Schedule) => {
-  localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
-  if (schedule.type === 'weekly') {
-    router.push(`/dashboard/weekly-schedule/review?id=${schedule.id}`);
-  } else {
-    router.push(`/dashboard/monthly-schedule/review?id=${schedule.id}`);
+ const handleViewSchedule = (schedule: Schedule) => {
+  console.log('View schedule clicked:', schedule); // Debug log
+  
+  try {
+    localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
+    console.log('Schedule data saved to localStorage'); // Debug log
+    
+    const route = schedule.type === 'weekly' 
+      ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
+      : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
+    
+    console.log('Navigating to:', route); // Debug log
+    router.push(route);
+  } catch (error) {
+    console.error('Error in handleViewSchedule:', error);
   }
 };
 
@@ -242,11 +260,17 @@ const handleViewSchedule = (schedule: Schedule) => {
                       {schedule.month} {schedule.year}
                     </p>
                     <p className="text-sm text-gray-600">
+                      Type: {schedule.type} {/* Add this line to verify type */}
+                    </p>
+                    <p className="text-sm text-gray-600">
                       Approved on: {new Date(schedule.approvalDate ?? '').toLocaleDateString()}
                     </p>
                   </div>
                   <button
-                    onClick={() => handleViewSchedule(schedule)}
+                    onClick={() => {
+                      console.log('View button clicked for schedule:', schedule); // Debug log
+                      handleViewSchedule(schedule);
+                    }}
                     className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                   >
                     View
