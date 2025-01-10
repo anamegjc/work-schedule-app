@@ -60,7 +60,7 @@ export default function ManagerDashboard() {
       // Ensure type property exists
       const processedSchedules = schedules.map((schedule: Schedule) => ({
         ...schedule,
-        type: schedule.type || 'monthly' // Default to monthly if type is missing
+        type: 'monthly' // Default to monthly if type is missing
       }));
       setPendingSchedules(schedules.filter((s: Schedule) => s.status === 'PENDING'));
       setApprovedSchedules(schedules.filter((s: Schedule) => s.status === 'APPROVED'));
