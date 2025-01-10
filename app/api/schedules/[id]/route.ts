@@ -1,3 +1,4 @@
+// app/api/schedules/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
@@ -5,10 +6,16 @@ import { authOptions } from '@/app/lib/auth';
 
 const prisma = new PrismaClient();
 
+type RouteContext = {
+  params: { 
+    id: string 
+  };
+};
+
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  _request: NextRequest, 
+  context: RouteContext
+): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions);
 
@@ -21,7 +28,7 @@ export async function GET(
 
     const schedule = await prisma.schedule.findUnique({
       where: {
-        id: params.id,
+        id: context.params.id,
       },
       include: {
         manager: true,
