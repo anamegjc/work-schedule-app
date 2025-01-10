@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import WeeklySchedule from '@app/components/WeeklySchedule'; // Adjust the import path based on your project structure
+import WeeklySchedule from '@/app/components/WeeklySchedule'; // Adjust the import path based on your project structure
 
 export default function WeeklyScheduleReview() {
   const [scheduleData, setScheduleData] = useState(null);
