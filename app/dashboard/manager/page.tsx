@@ -124,7 +124,7 @@ export default function ManagerDashboard() {
   };
 
  // In your ManagerDashboard component
-const handleViewSchedule = (schedule: Schedule): void => {
+const handleViewSchedule = (schedule: Schedule) => {
   localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
   if (schedule.type === 'weekly') {
     router.push(`/dashboard/weekly-schedule/review?id=${schedule.id}`);
