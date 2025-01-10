@@ -122,6 +122,16 @@ export default function ManagerDashboard() {
     setOpenDropdownId(null); // Close the dropdown when an action is selected
   };
 
+ // In your ManagerDashboard component
+const handleViewSchedule = (schedule: any) => {
+  localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
+  if (schedule.type === 'weekly') {
+    router.push(`/dashboard/weekly-schedule/review?id=${schedule.id}`);
+  } else {
+    router.push(`/dashboard/monthly-schedule/review?id=${schedule.id}`);
+  }
+};
+
   return (
     <div className="space-y-6 p-6">
       <div className="bg-white rounded-lg shadow p-6">
@@ -235,10 +245,9 @@ export default function ManagerDashboard() {
                     </p>
                   </div>
                   <button
-                    onClick={() => router.push(`/schedule/${schedule.id}/review`)}
+                    onClick={() => handleViewSchedule(schedule.id)}
                     className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                   >
-                    <Eye size={16} />
                     View
                   </button>
                 </div>

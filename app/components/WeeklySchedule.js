@@ -5,12 +5,15 @@ import { Printer, Download } from 'lucide-react';
 import * as XLSX from 'xlsx-js-style';
 import { useRouter } from 'next/navigation';
 
+// Add isReviewMode to your component props
+
 const WeeklySchedule = ({ 
   role = 'STUDENT', 
   onSubmit, 
   initialData = null,
   managers = [],
-  isNewSchedule = false
+  isNewSchedule = false,
+  isReviewMode = false // Add default value
 }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -205,6 +208,7 @@ const WeeklySchedule = ({
               className="w-full p-2 border rounded"
               value={formData.employeeName}
               onChange={(e) => handleInputChange('employeeName', e.target.value)}
+              disabled={isReviewMode || role === 'MANAGER' || formData.approvalStatus === 'approved'}
             />
           </div>
           <div>
@@ -213,6 +217,7 @@ const WeeklySchedule = ({
               className="w-full p-2 border rounded"
               value={formData.position}
               onChange={(e) => handleInputChange('position', e.target.value)}
+              disabled={isReviewMode || role === 'MANAGER' || formData.approvalStatus === 'approved'}
             />
           </div>
           <div>
@@ -221,6 +226,7 @@ const WeeklySchedule = ({
               className="w-full p-2 border rounded"
               value={selectedManager}
               onChange={(e) => setSelectedManager(e.target.value)}
+              disabled={isReviewMode || role === 'MANAGER' || formData.approvalStatus === 'approved'}
             >
               <option value="">Select Manager</option>
               {managers.map((manager) => (
@@ -250,6 +256,7 @@ const WeeklySchedule = ({
                       className="w-full p-1 border rounded text-sm"
                       value={formData.shifts[index].startTime}
                       onChange={(e) => handleShiftChange(index, 'startTime', e.target.value)}
+                      disabled={isReviewMode || role === 'MANAGER' || formData.approvalStatus === 'approved'}
                     />
                   </div>
                   <div>
@@ -259,14 +266,18 @@ const WeeklySchedule = ({
                       className="w-full p-1 border rounded text-sm"
                       value={formData.shifts[index].endTime}
                       onChange={(e) => handleShiftChange(index, 'endTime', e.target.value)}
+                      disabled={isReviewMode || role === 'MANAGER' || formData.approvalStatus === 'approved'}
                     />
                   </div>
                   <button
                     className="w-full p-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
                     onClick={() => calculateHours(index)}
+                    disabled={role === 'MANAGER' || formData.approvalStatus === 'approved'}
+
                   >
                     Calculate Hours
                   </button>
+                  
                   <div>
                     <label className="block text-sm text-gray-600">Hours</label>
                     <input
@@ -282,6 +293,7 @@ const WeeklySchedule = ({
           </div>
         </div>
 
+            
         <div className="mt-6 bg-gray-50 rounded-lg p-4">
           <h2 className="text-xl font-bold mb-4">Weekly Summary</h2>
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -300,16 +312,33 @@ const WeeklySchedule = ({
                 value={formData.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 rows={3}
+                disabled={isReviewMode || role === 'MANAGER' || formData.approvalStatus === 'approved'}
               />
             </div>
           </div>
+            
+          {/* Action buttons*/}
+          {!isReviewMode ? (
+            <button
+                onClick={() => router.back()}
+                className="mt-4 w-full bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            >
+                Back to Dashboard
+            </button>
+            
+        ) : (
+            role === 'STUDENT' && (            
+            
+            <button
+                onClick={handleSubmitForApproval}
+                className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                disabled={formData.approvalStatus === 'approved'}
 
-          <button
-            onClick={handleSubmitForApproval}
-            className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          >
-            Submit for Approval
-          </button>
+            >
+                Submit for Approval
+            </button>
+            )
+        )}
         </div>
       </div>
     </div>
