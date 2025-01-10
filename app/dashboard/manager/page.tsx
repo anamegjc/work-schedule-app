@@ -13,6 +13,7 @@ interface Schedule {
   status: string;
   totalHours: string;
   approvalDate?: string;
+  type: 'weekly' | 'monthly';
 }
 
 export default function ManagerDashboard() {
@@ -123,7 +124,7 @@ export default function ManagerDashboard() {
   };
 
  // In your ManagerDashboard component
-const handleViewSchedule = (schedule: any) => {
+const handleViewSchedule = (schedule: Schedule): void => {
   localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
   if (schedule.type === 'weekly') {
     router.push(`/dashboard/weekly-schedule/review?id=${schedule.id}`);
@@ -162,7 +163,7 @@ const handleViewSchedule = (schedule: any) => {
                     {openDropdownId === schedule.id && (
                       <div className="absolute right-0 top-full z-10 w-48 bg-white border rounded shadow-lg mt-2">
                         <button 
-                          onClick={() => router.push(`/schedule/${schedule.id}/review`)}
+                          onClick={() => handleViewSchedule(schedule)}
                           className="flex items-center w-full p-2 hover:bg-gray-100 text-left"
                         >
                           <Eye size={16} className="mr-2" /> Review
@@ -245,7 +246,7 @@ const handleViewSchedule = (schedule: any) => {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleViewSchedule(schedule.id)}
+                    onClick={() => handleViewSchedule(schedule)}
                     className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                   >
                     View
