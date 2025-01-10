@@ -268,7 +268,7 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
         <h2 className="text-2xl font-bold mb-4">Approved Schedules</h2>
         {approvedSchedules.length > 0 ? (
           <div className="grid gap-4">
-            {approvedSchedules.map((schedule) => (
+            {approvedSchedules.map((schedule: Schedule) => (
               <div key={schedule.id} className="border rounded-lg p-4">
                 <div className="flex justify-between items-start">
                   <div>
