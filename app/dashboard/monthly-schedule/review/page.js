@@ -14,6 +14,7 @@ export default function MonthlyScheduleReview() {
   const searchParams = useSearchParams();
   const scheduleId = searchParams.get('id');
   
+  
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -47,7 +48,7 @@ export default function MonthlyScheduleReview() {
     };
 
     fetchSchedule();
-  }, [scheduleId]);
+  }, [scheduleId, setError]);
 
   if (error) {
     return (

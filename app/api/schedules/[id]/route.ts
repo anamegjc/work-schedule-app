@@ -1,32 +1,30 @@
-// app/api/schedules/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/lib/auth';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  context: { params: { id: string } }
+): Promise<NextResponse> {
   try {
-    const id = params.id;
+    const session = await getServerSession(authOptions);
 
-    if (!id) {
+    if (!session) {
       return NextResponse.json(
-        { error: 'Schedule ID is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
     const schedule = await prisma.schedule.findUnique({
       where: {
-        id: id,
+        id: context.params.id,
       },
-      // Include any related data you need
       include: {
-        // Add any relations you need to include
-         manager: true,
-         
+        manager: true,
       }
     });
 

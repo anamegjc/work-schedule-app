@@ -1,11 +1,42 @@
 // app/lib/auth.ts
 import { prisma } from './prisma'
-import { AuthOptions } from 'next-auth'
+import { NextAuthOptions } from 'next-auth'
+import { JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { UserRole } from '@prisma/client'
 
-export const authOptions: AuthOptions = {
+// Extend the default types to include custom properties
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string
+      email: string
+      name: string
+      role: UserRole
+      studentId?: string
+      office?: string
+    }
+  }
+
+  interface User {
+    id: string
+    role: UserRole
+    studentId?: string
+    office?: string
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string
+    role: UserRole
+    studentId?: string
+    office?: string
+  }
+}
+
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',

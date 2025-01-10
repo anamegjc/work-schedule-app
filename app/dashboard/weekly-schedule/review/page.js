@@ -43,7 +43,7 @@ export default function WeeklyScheduleReview() {
     };
 
     fetchSchedule();
-  }, [scheduleId]);
+  }, [scheduleId, setError]);
 
   if (error) {
     return (
