@@ -139,16 +139,22 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
   };
 
   const handleViewSchedule = (schedule: Schedule) => {
-    console.log('View schedule clicked:', schedule);
+    console.log('handleViewSchedule called');
     try {
-      // Default to monthly view since we're viewing approved schedules
+      // Since we know it's an approved schedule, we'll use monthly-schedule path
       const route = `/dashboard/monthly-schedule/review?id=${schedule.id}`;
-      console.log('Navigating to:', route);
-      router.push(route);
+      console.log('Attempting to navigate to:', route);
+      
+      // We should also log the router to make sure it's initialized
+      console.log('Router before navigation:', router);
+      
+      // Try to force a hard navigation if the router push isn't working
+      window.location.href = route;
     } catch (error) {
       console.error('Error in handleViewSchedule:', error);
+      alert('Error viewing schedule. Please try again.');
     }
-  };
+  }
 
   return (
     <div className="space-y-6 p-6">
