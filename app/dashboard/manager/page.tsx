@@ -23,6 +23,7 @@ export default function ManagerDashboard() {
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
   const router = useRouter();
+  console.log('Router initialized:', router);
 
   const fetchSchedules = async () => {
     try {
@@ -63,6 +64,11 @@ export default function ManagerDashboard() {
       }));
       setPendingSchedules(schedules.filter((s: Schedule) => s.status === 'PENDING'));
       setApprovedSchedules(schedules.filter((s: Schedule) => s.status === 'APPROVED'));
+
+      // Inside fetchSchedules, after parsing data
+console.log('Raw schedules before processing:', schedules);
+console.log('Processed pending schedules:', schedules.filter((s: Schedule) => s.status === 'PENDING'));
+console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s.status === 'APPROVED'));
     } catch (error) {
       console.error('Error fetching schedules:', error);
       // Optionally set an error state or show a user-friendly message
@@ -134,19 +140,28 @@ export default function ManagerDashboard() {
 
  // In your ManagerDashboard component
  const handleViewSchedule = (schedule: Schedule) => {
-  console.log('View schedule clicked:', schedule); // Debug log
+  console.log('handleViewSchedule called');
+  console.log('Schedule received:', schedule);
+  console.log('Schedule type:', schedule.type);
+  console.log('Schedule ID:', schedule.id);
   
   try {
-    localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
-    console.log('Schedule data saved to localStorage'); // Debug log
+    // Verify router is initialized
+    console.log('Router object:', router);
     
+    // Save to localStorage
+    localStorage.setItem('viewScheduleData', JSON.stringify(schedule));
+    console.log('Data saved to localStorage');
+    
+    // Construct and log the route
     const route = schedule.type === 'weekly' 
       ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
       : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
+    console.log('Attempting to navigate to:', route);
     
-    console.log('Navigating to:', route); // Debug log
+    // Simple router push without catch
     router.push(route);
-  } catch (error) {
+  } catch (error: unknown) { // Explicitly type the error
     console.error('Error in handleViewSchedule:', error);
   }
 };
