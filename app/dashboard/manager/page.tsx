@@ -138,31 +138,14 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
     setOpenDropdownId(null); // Close the dropdown when an action is selected
   };
 
-  const handleViewSchedule = async (schedule: Schedule) => {
-    console.log('handleViewSchedule called with schedule:', schedule);
-    
+  const handleViewSchedule = (schedule: Schedule) => {
+    console.log('View schedule clicked:', schedule);
     try {
-      // Store the schedule type in localStorage along with the data
-      if (typeof window !== 'undefined') {
-        try {
-          localStorage.setItem('viewScheduleData', JSON.stringify({
-            ...schedule,
-            type: schedule.type || 'monthly' // Use existing type or default to monthly
-          }));
-          console.log('Schedule data stored in localStorage');
-        } catch (storageError) {
-          console.error('Error storing in localStorage:', storageError);
-        }
-      }
-  
-      // Determine the route based on schedule type
-      const route = schedule.type === 'weekly' 
-        ? `/dashboard/weekly-schedule/review?id=${schedule.id}`
-        : `/dashboard/monthly-schedule/review?id=${schedule.id}`;
-  
-      console.log('Attempting navigation to:', route);
-      await router.push(route);
-    } catch (error: unknown) {
+      // Default to monthly view since we're viewing approved schedules
+      const route = `/dashboard/monthly-schedule/review?id=${schedule.id}`;
+      console.log('Navigating to:', route);
+      router.push(route);
+    } catch (error) {
       console.error('Error in handleViewSchedule:', error);
     }
   };
