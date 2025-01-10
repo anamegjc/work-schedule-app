@@ -93,6 +93,9 @@ export default function ScheduleReview() {
 
   useEffect(() => {
     async function fetchSchedule() {
+
+        if (!scheduleId) return;
+
       try {
         const response = await fetch(`/api/schedules/${scheduleId}`);
         if (!response.ok) {
@@ -109,9 +112,8 @@ export default function ScheduleReview() {
       }
     }
 
-    if (scheduleId) {
-      fetchSchedule();
-    }
+    fetchSchedule();
+    
   }, [scheduleId]);
 
   if (loading) {
@@ -148,17 +150,20 @@ export default function ScheduleReview() {
           </div>
 
           <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-2">Shifts</h3>
-            <div className="bg-gray-50 p-4 rounded overflow-auto">
+            <h3 className="text-lg font-semibold mb-2">Schedule Details</h3>
+            <pre className="bg-gray-50 p-4 rounded overflow-auto">
+              {JSON.stringify(schedule, null, 2)}
+            </pre>
+            {/* <div className="bg-gray-50 p-4 rounded overflow-auto">
               {schedule.shifts && typeof schedule.shifts === 'object' && (
                 Object.entries(schedule.shifts).map(([date, shift]) => (
                   <div key={date} className="mb-4 border-b pb-2">
                     <p className="font-medium">{date}</p>
-                    <p className="ml-4">Hours: {JSON.stringify(shift)}</p>
+                    <p className="ml-4">Hours: {JSON.stringify(schedule, null, 2)}</p>
                   </div>
                 ))
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

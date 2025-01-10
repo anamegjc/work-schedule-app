@@ -62,13 +62,16 @@ export default function ManagerDashboard() {
         ...schedule,
         type: 'monthly' // Default to monthly if type is missing
       }));
+
+      console.log('Processed schedules:', processedSchedules);
+
       setPendingSchedules(schedules.filter((s: Schedule) => s.status === 'PENDING'));
       setApprovedSchedules(schedules.filter((s: Schedule) => s.status === 'APPROVED'));
 
       // Inside fetchSchedules, after parsing data
-console.log('Raw schedules before processing:', schedules);
-console.log('Processed pending schedules:', schedules.filter((s: Schedule) => s.status === 'PENDING'));
-console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s.status === 'APPROVED'));
+      console.log('Raw schedules before processing:', schedules);
+      console.log('Processed pending schedules:', schedules.filter((s: Schedule) => s.status === 'PENDING'));
+      console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s.status === 'APPROVED'));
     } catch (error) {
       console.error('Error fetching schedules:', error);
       // Optionally set an error state or show a user-friendly message
@@ -149,7 +152,7 @@ console.log('Processed approved schedules:', schedules.filter((s: Schedule) => s
       console.log('Router before navigation:', router);
       
       // Try to force a hard navigation if the router push isn't working
-      window.location.href = route;
+      window.location.href = `/dashboard/monthly-schedule/review?id=${schedule.id}`;
     } catch (error) {
       console.error('Error in handleViewSchedule:', error);
       alert('Error viewing schedule. Please try again.');
