@@ -9,9 +9,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const scheduleId = params.id;
+    const id = params.id;
 
-    if (!scheduleId) {
+    if (!id) {
       return NextResponse.json(
         { error: 'Schedule ID is required' },
         { status: 400 }
@@ -20,7 +20,7 @@ export async function GET(
 
     const schedule = await prisma.schedule.findUnique({
       where: {
-        id: scheduleId,
+        id: id,
       },
       // Include any related data you need
       include: {
